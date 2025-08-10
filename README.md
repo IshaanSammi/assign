@@ -1,73 +1,97 @@
-AI‑Enabled PowerPoint Inconsistency Checker
-This is a Python‑based command‑line tool that analyzes PowerPoint decks (.pptx) and/or slide images to detect factual, numerical, textual, and timeline inconsistencies across slides.
+# Slide Inconsistency Analyzer
 
-It uses:
+This Python project extracts text from PowerPoint presentations (`.pptx`) and associated slide images, then leverages Google Gemini to detect factual or logical inconsistencies across slides. It is useful for auditing presentations for conflicting data, contradictory claims, or timeline mismatches.
 
-python-pptx for extracting text from .pptx files.
+## Features
 
-Tesseract OCR (pytesseract) for reading slide images.
+- **Extracts text from PPTX slides** using `python-pptx`.
+- **OCR text extraction from slide images** using `pytesseract`.
+- **Analyzes slides for inconsistencies** using Gemini Pro API.
+- **Outputs a JSON summary** of detected inconsistencies, listing slide numbers and descriptions.
 
-Google Gemini 2.5 Flash API for advanced semantic and logical comparison.
+## Requirements
 
-Features
-Works with both PPTX files and image slides.
+- Python 3.7+
+- [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract) installed on your system (for image OCR)
+- The following Python packages (install via pip):
 
-Detects:
+  ```bash
+  pip install python-pptx pillow pytesseract requests
+  ```
 
-Conflicting numerical data (e.g., mismatched revenue figures, incorrect percentages)
+## Setup
 
-Contradictory statements across slides
+1. **Clone the Repository**
 
-Timeline/date mismatches
+   ```bash
+   git clone https://github.com/IshaanSammi/assign.git
+   cd assign
+   ```
 
-Outputs a clear, structured, terminal‑friendly report with slide references.
+2. **Install Dependencies**
 
-Generalised, extensible design for different subjects or industries.
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-No UI — runs purely in the terminal as per requirements.
+   *If `requirements.txt` is missing, use the pip command above under Requirements.*
 
-How It Works
-Extracts Text from PPTX
+3. **Install Tesseract-OCR**
 
-Opens .pptx using python-pptx.
+   - On Ubuntu/Debian:  
+     `sudo apt-get install tesseract-ocr`
+   - On macOS (with Homebrew):  
+     `brew install tesseract`
+   - On Windows:  
+     [Download the installer](https://github.com/tesseract-ocr/tesseract/wiki).
 
-Reads slide shapes containing text along with their slide numbers.
+4. **Set Up Your Gemini API Key**
 
-Extracts Text from Images
+   - Obtain a Gemini API key from Google AI Studio.
+   - Edit `code.py` and replace the line:
+     ```python
+     GEMINI_API_KEY = "Put your api key(i have not put here publically)"
+     ```
+     with
+     ```python
+     GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
+     ```
 
-Reads .png/.jpg files via pytesseract OCR.
+## Usage
 
-Assigns slide numbers based on file names.
+1. **Prepare Your Files**
 
-Combines & Cleans Data
+   - Place your PowerPoint file at `slides/sample_deck.pptx`.
+   - Place slide images (named like `slide1.png`, `slide2.jpg`, etc.) in `slides/images/`.
 
-Merges all extracted text blocks.
+2. **Run the Script**
 
-Deduplicates where same slide is present in both formats.
+   ```bash
+   python code.py
+   ```
 
-Sends Data to Gemini
+   The script will:
+   - Extract text from the PPTX and images.
+   - Send the text to Gemini for inconsistency analysis.
+   - Print out any detected inconsistencies.
 
-Constructs a structured prompt listing all slide contents.
+## Output Example
 
-Asks Gemini to identify:
+```
+Extracting slide text from PPTX ...
+Extracting text from slide images ...
+Sending slide text to Gemini for inconsistency detection ...
 
-Conflicting figures or percentages
+=== Inconsistencies Detected ===
+- Issue on Slide(s): 2, 4
+  Description: Slide 2 states revenue as $1M, but Slide 4 states $900K.
+...
+Analysis complete.
+```
 
-Contradictory claims
+## Notes
 
-Mismatched dates or timelines
+- **API Limitations:** The Gemini API may have usage limits or rate restrictions.
+- **OCR Accuracy:** Text extraction from images depends on image quality and Tesseract configuration.
+- **Error Handling:** The script prints errors for API or text parsing failures.
 
-Calls the endpoint:
-https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
-
-Parses AI Response
-
-Receives JSON output from Gemini with an array of issues including:
-
-slides: list of involved slide numbers
-
-issue: short description
-
-Displays in Terminal
-
-Prints each inconsistency in a clean format with slide references.
